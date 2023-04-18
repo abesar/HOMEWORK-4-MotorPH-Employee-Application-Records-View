@@ -9,14 +9,29 @@ import java.util.List;
 
 public class Main {
 
-//    PATH FROM CONTENT ROOT
-    static File csvEmployeeDetails = new File("F:\\electronomia\\src\\main\\utils\\MotorPH Employee Data - Employee Details (3).csv");
-    static File csvAttendanceDetails = new File("src/main/utils/MotorPH Employee Data - Attendance Record (2).csv");
+//  PATH FROM CONTENT ROOT
+    static File file_EmployeeDetails = new File("src\\main\\utils\\MotorPH Employee Data - Employee Details (3).csv");
+    static File file_AttendanceDetails = new File("src\\main\\utils\\MotorPH Employee Data - Attendance Record (2).csv");
 
 
-    // FROM CAMU LEARNING MATERIALS
+    /**
+     *
+     *      This code defines a method called "readAllLinesEmployeeDetails()" and "readAllLinesAttendanceRecord()"
+     * that attempts to read all lines from a CSV file containing employee details.
+     * It uses the CSVReader class to accomplish this.
+     *
+     *      The code is wrapped in a try-catch block to handle any exceptions that
+     * may be thrown while reading the file.
+     *      If an exception is caught, it will print out an error message indicating where the problem occurred.
+     *
+     *      The method returns a list of string arrays containing the parsed CSV data.
+     * If an error occurs, it returns null.
+     *
+     *
+     *
+     **/
     public static List<String[]> readAllLinesEmployeeDetails() throws Exception {
-        try (Reader reader = Files.newBufferedReader(csvEmployeeDetails.toPath())) {
+        try (Reader reader = Files.newBufferedReader(file_EmployeeDetails.toPath())) {
             try (CSVReader csvReader = new CSVReader(reader)) {
                 return (List<String[]>) csvReader.readAll();
             }
@@ -31,7 +46,7 @@ public class Main {
     }
 
     public static List<String[]> readAllLinesAttendanceRecord() throws Exception {
-        try (Reader reader = Files.newBufferedReader(csvAttendanceDetails.toPath())) {
+        try (Reader reader = Files.newBufferedReader(file_AttendanceDetails.toPath())) {
             try (CSVReader csvReader = new CSVReader(reader)) {
                 return (List<String[]>) csvReader.readAll();
             }
@@ -46,8 +61,15 @@ public class Main {
     }
 
 
+    /** Run the Program
+     *      git clone git@github.com:abesar/HOMEWORK-4-MotorPH-Employee-Application-Records-View.git
+     *      Once you run the program you will see two visible GUI "recordsView" and "employeeprofileview"
+     *
+     *
+     */
     public static void main(String[] args) throws Exception {
 
-        recordsView rv = new recordsView();
+        employeeprofileview epv = new employeeprofileview();
+        recordsView  rv = new recordsView();
     }
 }
