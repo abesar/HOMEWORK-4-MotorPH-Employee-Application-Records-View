@@ -113,7 +113,9 @@ public class recordsView<T> extends JFrame
                 // Collect Row Data
                 data[outer][inner] = list.get(outer)[inner];
                 inner++;
+//                System.out.println("inner " + inner);
             }
+//            System.out.println("outer " + outer);
             outer++;
         }
         return data;
@@ -247,21 +249,21 @@ public class recordsView<T> extends JFrame
         String [][] arr2d = new String[col][row];
         try{
             while (i < list.size())
-            { // starting loop: 0 < 2175
-                if (list.get(i)[0]. // employee number, ex: 10001
-                        equals((employee_number)))
-                {
-                    int j = 0;
-                    //  Store the values of employee into
-                    while (j < row)
-                    { // 0 < 6
-                        arr2d[count][j] = list.get(i)[j]; //set the value of each element
+                { // starting loop: 0 < 2175
+                    if (list.get(i)[0]. // employee number, ex: 10001
+                            equals((employee_number)))
+                    {
+                        int j = 0;
+                        //  Store the values of rows into arr2d
+                        while (j < row)
+                        { // 0 < 6
+                            arr2d[count][j] = list.get(i)[j]; //set the value of each element
+                            j++;
+                        }
+                        count++;
                     }
-                        j++;
-                    }
-                    count++;
+                    i++;
                 }
-                i++;
             }
         catch (Exception ex) {
             ex.printStackTrace();
