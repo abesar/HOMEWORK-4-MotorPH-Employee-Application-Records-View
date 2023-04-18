@@ -69,7 +69,7 @@ public class Main {
      */
     public static void main(String[] args) throws Exception {
 
-        employeeprofileview epv = new employeeprofileview();
-        recordsView  rv = new recordsView();
+        employeeprofileview EmployeeProfileView = new employeeprofileview();
+        recordsView  RecordsView = new recordsView();
     }
 }
