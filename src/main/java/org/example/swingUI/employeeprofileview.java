@@ -10,13 +10,20 @@ import java.util.List;
 
 import static org.example.swingUI.Main.readAllLinesEmployeeDetails;
 
+
+
 public class employeeprofileview extends JFrame{
-    // ATTRIB
+    // ATTRIBUTES START
     private JPanel panelMain;
     private  JTable EmployeeRecord;
     private  JComboBox comboBox_EmployeeNumber;
-    private JScrollPane jp;
+    private JScrollPane jScrollPane;
     private  JLabel lbl_selectEmployeeNumber;
+    //  ATTRIBUTES END
+
+
+
+    /** SETTERS AND GETTERS */
 
     public JPanel getPanelMain() {
         return panelMain;
@@ -50,75 +57,106 @@ public class employeeprofileview extends JFrame{
         this.lbl_selectEmployeeNumber = lbl_selectEmployeeNumber;
     }
 
-    public JScrollPane getJp() {
-        return jp;
+    public JScrollPane getjScrollPane() {
+        return jScrollPane;
     }
 
-    public void setJp(JScrollPane jp) {
-        this.jp = jp;
+    public void setjScrollPane(JScrollPane jScrollPane) {
+        this.jScrollPane = jScrollPane;
     }
 
-    public TableModel allData(List<String[]> list){
-
-        String[] header = {
-                "Employee #",
-                "Last Name",
-                "First Name",
-                "Birthday",
-                "Address"
-        };
-        String[][] data = new String[list.size()][list.get(0).length];
 
 
 
-        /**  length of the employee data */
-        int length_of_col = data.length;
-        int length_of_row = data[0].length;
+    /**
+     *      This method will convert List<String[]> to String[][]
+     *
+     *      When the iteration is complete, the 2D Array is returned.
+     *
+     *      @param list The input list contains one-dimensional String values.
+     *
+     *      @return data
+     **/
+
+    public String[][] data(List<String[]> list){
+        // Column Size of CSV.
+        int col = list.size();
+        // Row Size of first line.
+        int row = list.get(0).length;
+        //  Data collection containing the String data type
+        String[][] data = new String[col][row];
+
 
         /** COL COUNTER */
-        int col = 0;
-
-
-        while (col < length_of_col)
+        int outer = 0;
+        while (outer < col)
         {
             /** ROW COUNTER */
-            int row = 0;
-            while (row < length_of_row)
+            int inner = 0;
+            while (inner < row)
             {
-                data[col][row] = list.get(col)[row];
-                row++;
+                // Collect Row Data
+                data[outer][inner] = list.get(outer)[inner];
+                inner++;
             }
-            col++;
+            outer++;
         }
-        TableModel dtm = new DefaultTableModel(data, header);
-        return dtm;
+        return data;
     }
+
+
+    /**
+     *  This method creates an array that will store the values in the first column of the file as rows
+     *
+     *  @param list The input List contains one-dimensional String values.
+     *
+     *  @return  arr_header
+     *
+     **/
+
+    public String[] getHeaders(List<String[]> list){
+        int rows = 5;
+        String [] arr_header = new String[rows];
+        int first_line = 0;
+        int i = 0;
+        while (i < rows){
+            arr_header[i] = list.get(first_line)[i];
+            i++;
+        }
+        return arr_header;
+    }
+
+    // Constructor
 
     employeeprofileview() throws Exception {
 
 
-
-
         List<String[]> list = readAllLinesEmployeeDetails();
+        // {Employee # , Last Name , First Name , Birthday , Address}
+        String [] header = getHeaders(list);
+
         list.remove(0); // REMOVE THE HEADER
 
+        TableModel dtm = new DefaultTableModel(data(list), header);
 
+        getEmployeeRecord().setModel(dtm);
 
-
-        getEmployeeRecord().setModel(allData(list));
+        //  Customize Column Width
         TableColumnModel tcm = getEmployeeRecord().getColumnModel();
         tcm.getColumn(0).setPreferredWidth(100);
         tcm.getColumn(1).setPreferredWidth(100);
         tcm.getColumn(2).setPreferredWidth(100);
         tcm.getColumn(3).setPreferredWidth(250);
         tcm.getColumn(4).setPreferredWidth(250);
-        getEmployeeRecord().setRowHeight(40);
+        //  Customize Row Height
+        getEmployeeRecord().setRowHeight(40);// set height for each
 
-
+        //  Customize Header
         JTableHeader jth = (getEmployeeRecord().getTableHeader());
         jth.setFont(new Font("Arial", Font.BOLD,16));
 
-        getJp().getViewport().add(getEmployeeRecord());
+        // Add JScroll to JTable
+        getjScrollPane().getViewport().add(getEmployeeRecord());
 
 
         setTitle("EMPLOYEE PROFILE VIEW");
