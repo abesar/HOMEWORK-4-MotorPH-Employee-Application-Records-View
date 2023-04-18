@@ -38,7 +38,7 @@
               <preferredScrollableViewportSize width="800" height="500"/>
             </properties>
           </component>
-          <scrollpane id="9271c" binding="jp">
+          <scrollpane id="9271c" binding="jScrollPane">
             <constraints>
               <grid row="1" column="2" row-span="1" col-span="1" vsize-policy="7" hsize-policy="7" anchor="4" fill="2" indent="0" use-parent-layout="false"/>
             </constraints>

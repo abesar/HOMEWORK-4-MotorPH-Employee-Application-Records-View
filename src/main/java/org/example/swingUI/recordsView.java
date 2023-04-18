@@ -15,10 +15,17 @@ import javax.swing.table.TableModel;
 
 public class recordsView<T> extends JFrame
 {
+
+    /** Attributes */
+
     private JPanel panelMain;
     private JTable EmployeeRecord;
-    private JScrollPane jp;
+    private JScrollPane jScrollPane;
     private JComboBox comboBox;
+
+
+    /* Getter and Setter */
+
 
     public JPanel
     getPanelMain ()
@@ -45,15 +52,15 @@ public class recordsView<T> extends JFrame
     }
 
     public JScrollPane
-    getJp ()
+    getjScrollPane()
     {
-        return jp;
+        return jScrollPane;
     }
 
     public void
-    setJp (JScrollPane jp)
+    setjScrollPane(JScrollPane jScrollPane)
     {
-        this.jp = jp;
+        this.jScrollPane = jScrollPane;
     }
 
     public JComboBox
@@ -67,47 +74,70 @@ public class recordsView<T> extends JFrame
     {
         this.comboBox = comboBox;
     }
-    public String[] header(List<String[]> list){
 
+    /*
+     *  This method will return the CSV's header.
+     */
+
+    public String[] header(){
         return new String[]{"Employee #","Last Name","First Name","Date","Time-in","Time-out"};
     }
-    public TableModel allData(List<String[]> list){
-        // initialize data for the first param of DefaultTableModel
-        String[][] data = new String[list.size ()][list.get (0).length];
-        /**  length of the employee data */
-        int length_of_col = data.length;
-        int length_of_row = data[0].length;
+
+    /**
+     *      This method will convert List<String[]> to String[][]
+     *
+     *      When the iteration is complete, the 2D Array is returned.
+     *
+     *      @param list The input List contains one-dimensional String values.
+     *
+     *      @return data
+     **/
+
+    public String[][] data(List<String[]> list){
+        // Column Size of CSV.
+        int col = list.size();
+        // Row Size of first line.
+        int row = list.get(0).length;
+        //  Data collection containing the String data type
+        String[][] data = new String[col][row];
+
 
         /** COL COUNTER */
-        int col = 0;
-
-        while (col < length_of_col)
+        int outer = 0;
+        while (outer < col)
         {
             /** ROW COUNTER */
-            int row = 0;
-            while (row < length_of_row)
+            int inner = 0;
+            while (inner < row)
             {
-                data[col][row] = list.get (col)[row];
-                row++;
+                // Collect Row Data
+                data[outer][inner] = list.get(outer)[inner];
+                inner++;
             }
-            col++;
+            outer++;
         }
-        TableModel dtm = new DefaultTableModel (data, header(list));
-        return dtm;
+        return data;
     }
 
+
+    /** Constructor */
     public recordsView () throws Exception
     {
+        //  Gathering data from the CSV file
         List<String[]> list = readAllLinesAttendanceRecord ();
+        //  REMOVE THE HEADER From the list
+        list.remove (0);
 
-        list.remove (0); // REMOVE THE HEADER From the list
 
-
-        //ADDITEMS TO JCOMBOBOX
+        //  ADDITEMS TO JCOMBOBOX
         removedEmployeeNumberDuplicates(list);
 
 
-        getEmployeeRecord ().setModel (allData(list));
+        //  initializes the table by passing data and columnNames
+        TableModel tm = new DefaultTableModel(data(list), header());
+        //  Set data model
+        getEmployeeRecord ().setModel (tm);
+        //  Customize columns width
         TableColumnModel tcm = getEmployeeRecord ().getColumnModel ();
         tcm.getColumn (0).setPreferredWidth (100);
         tcm.getColumn (1).setPreferredWidth (100);
@@ -115,11 +145,11 @@ public class recordsView<T> extends JFrame
         tcm.getColumn (3).setPreferredWidth (100);
         tcm.getColumn (4).setPreferredWidth (100);
         getEmployeeRecord ().setRowHeight (40);
-
+        //  Customize Header of the Table
         JTableHeader jth = (getEmployeeRecord ().getTableHeader ());
         jth.setFont (new Font ("Arial", Font.BOLD, 16));
-
-        getJp ().getViewport ().add (getEmployeeRecord ());
+        //  Add scroll to table
+        getjScrollPane().getViewport ().add (getEmployeeRecord ());
 
         setTitle ("ATTENDANCE RECORD VIEW");
         setContentPane (getPanelMain ());
@@ -127,55 +157,54 @@ public class recordsView<T> extends JFrame
         setDefaultCloseOperation (WindowConstants.EXIT_ON_CLOSE);
         setLocationRelativeTo (null);
         setVisible (true);
+
+
+
+        /*
+         *  The user can select a specific employee number, which will instantly update the table.
+         *
+         *  The table will only show the data of the selected employee number
+         */
+
         comboBox.addItemListener(new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-
-
                 try{
-                    if (Integer.valueOf(e.getItem().toString()) > 0){
-                        String [][]arr = (showEmployeeRecordByNumber(comboBox.getSelectedItem().toString(), list)) ;
-                        System.out.println("outer: " + arr.length);
-                        System.out.println("inner: " + arr[0].length);
-
-                        DefaultTableModel dtm = new DefaultTableModel(arr, header(list));
-                        getEmployeeRecord().setModel(dtm);
-                    }
+                    String [][]arr = (showEmployeeRecordsByNumber(comboBox.getSelectedItem().toString(), list)) ;
+                    System.out.println("outer: " + arr.length);
+                    System.out.println("inner: " + arr[0].length);
+                    DefaultTableModel dtm = new DefaultTableModel(arr, header());
+                    getEmployeeRecord().setModel(dtm);
                 }
+
+                /*
+                 *  Because view record is a string, there will be an error whenever it is picked.
+                 */
                 catch (Exception eStateChanged){
                     System.out.println(eStateChanged.getMessage());
-                    getEmployeeRecord().setModel(allData(list));
+                    /***  Call the data() method to the tablemodel display all records. ***/
+                    DefaultTableModel dtm = new DefaultTableModel(data(list), header());
+                    getEmployeeRecord().setModel(dtm);
                 }
-
-
-//                System.out.println(countEmployeeNumberAppearance(e.getItem().toString(),list));
             }
         });
-
-//        String [][]arr22d = showEmployeeRecordByNumber(10001,list);
-//
-//        Arrays.stream(arr22d).forEach(s-> {
-//            for (String i: s) {
-//                System.out.println(i);
-//                System.out.println();
-//            }
-//        });
-
-
     }
 
+    /*
+     *  This method will eliminate employee number duplicates.
+     *
+     *  @param The input List contains one-dimensional String values.
+     *
+     *
+     */
     public void
     removedEmployeeNumberDuplicates (List<String[]> list)
     {
-
         ArrayList EmployeeNumber = new ArrayList ();
-
-
-
-
-        try {
-            for (int counter = 0; counter < list.size(); counter++){
-
+        try
+        {
+            for (int counter = 0; counter < list.size(); counter++)
+            {
                 int employee_num = Integer.valueOf (list.get (counter)[0]);
 
                 if (EmployeeNumber.contains (employee_num))
@@ -195,39 +224,59 @@ public class recordsView<T> extends JFrame
         }
     }
 
-    public String[][] showEmployeeRecordByNumber(String id_num, List<String[]>list){
+
+    /*
+     *  This method will store all the record of the Specified input employee number
+     *
+     *  @param employee_number Enter employee_number to find all occurrences of that number.
+     *
+     *  @param list The input List contains one-dimensional String values.
+     *
+     *  @return arr2d
+     */
+    public String[][] showEmployeeRecordsByNumber(String employee_number, List<String[]>list){
 
         int i = 0;
+        //  Count each appearance of the employee_number on the csv.
         int count = 0;
-        int col = countEmployeeNumberAppearance(id_num,list);
-        System.out.println("COL = " + col);
+        //  The total number of times the employee number appears
+        int col = countEmployeeNumberAppearance(employee_number,list);
+        //  The first line's length
         int row = list.get(0).length;
+        // Declare a two-dimensional array of integers with col size and row size
         String [][] arr2d = new String[col][row];
-        System.out.println("ARR2d = col =" + col);
-        System.out.println("ARR2d = row =" + row);
         try{
-            while (i < list.size()){ // starting loop: 0 < 2175
+            while (i < list.size())
+            { // starting loop: 0 < 2175
                 if (list.get(i)[0]. // employee number, ex: 10001
-                        equals((id_num))){
-                    //  Store the values of employee into
+                        equals((employee_number)))
+                {
                     int j = 0;
-//                  Employee #  ||  Last Name ||  First Name  ||  Date    ||  Time-in   ||  Time-out
-                    System.out.println("asdf"+i);
-                    while (j < row){ // 0 < 6
-                        arr2d[count][j] = list.get(i)[j];
+                    //  Store the values of employee into
+                    while (j < row)
+                    { // 0 < 6
+                        arr2d[count][j] = list.get(i)[j]; //set the value of each element
+                    }
                         j++;
                     }
                     count++;
                 }
                 i++;
             }
-            return arr2d;
+        catch (Exception ex) {
+            ex.printStackTrace();
         }
-        catch (IndexOutOfBoundsException e){
-            e.printStackTrace();
+        return arr2d;
         }
-        return null;
-    }
+
+
+        /*
+         *  this method provides a simple way to count the number of
+         *  times a given employee number appears in a list.
+         *  @param employee_number The input String to check for appearances in the list
+         *  @param list The input List contains one-dimensional String values.
+         *  @return total counts
+         */
 
 
     public int countEmployeeNumberAppearance(String employee_number, List<String []> list){
@@ -236,23 +285,7 @@ public class recordsView<T> extends JFrame
         int end = list.size();
 
         while (start < end){
-//            if (start == 0){
-//                System.out.println("START DATA");
-//                Arrays.stream(list.get(0)).forEach(s-> System.out.println("->>>>" + s));
-//                String get = list.get(0)[0];
-//                System.out.println("GET??? "+ get);
-//                System.out.println("mweheheh");
-//                System.out.println((employee_number)==(get));
-//                System.out.println("???1 " + list.get(0)[0].equals(employee_number));
-//                System.out.println("???2 " + list.get(0)[0].equals(String.valueOf(employee_number)));
-//                System.out.println("END DATA");
-//                System.out.println("SAAN BA AKO NAGKULANG???");
-//                System.out.println(employee_number);
-//                System.out.println(get);
-//                System.out.println("HERE CHECK");
-//                System.out.println(employee_number.equals(get));
-//            }
-            //  Check if the employeenumber equals to the @params employee_number
+            //  Check to see if the employeenumber matches the @params employee_number.
             if (list.get(start)[0].equals(String.valueOf(employee_number))){
                 count++;
             }
