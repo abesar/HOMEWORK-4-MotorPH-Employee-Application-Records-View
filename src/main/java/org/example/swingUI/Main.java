@@ -10,8 +10,8 @@ import java.util.List;
 public class Main {
 
 //  PATH FROM CONTENT ROOT
-    static File file_EmployeeDetails = new File("src\\main\\utils\\MotorPH Employee Data - Employee Details (3).csv");
-    static File file_AttendanceDetails = new File("src\\main\\utils\\MotorPH Employee Data - Attendance Record (2).csv");
+    static File file_EmployeeDetails = new File("src/main/utils/MotorPH Employee Data - Employee Details (3).csv");
+    static File file_AttendanceRecords = new File("src/main/utils/MotorPH Employee Data - Attendance Record (2).csv");
 
 
     /**
@@ -46,7 +46,7 @@ public class Main {
     }
 
     public static List<String[]> readAllLinesAttendanceRecord() throws Exception {
-        try (Reader reader = Files.newBufferedReader(file_AttendanceDetails.toPath())) {
+        try (Reader reader = Files.newBufferedReader(file_AttendanceRecords.toPath())) {
             try (CSVReader csvReader = new CSVReader(reader)) {
                 return (List<String[]>) csvReader.readAll();
             }
